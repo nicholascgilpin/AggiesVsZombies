@@ -24,6 +24,8 @@ var wKey;
 var aKey;
 var sKey;
 var dKey;
+var startTime
+var currentTime = 0
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
 var debugMode = true // Enables and disables the debug displays
@@ -87,6 +89,7 @@ GameStates.Instructions.prototype = {
 GameStates.Game = function (game) {};
 GameStates.Game.prototype = {
     preload: function () {
+		
         // Load the map info and map tile images
         game.load.tilemap('map', 'assets/tilemap2.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tilesImage', 'assets/tiles.png')
@@ -103,6 +106,8 @@ GameStates.Game.prototype = {
         // Connects to server
         socket = io.connect();
 
+		gamePlaying = true;
+		
         //  The 'map' key here is the Loader key given in game.load.tilemap
         map = game.add.tilemap('map')
 
@@ -113,7 +118,7 @@ GameStates.Game.prototype = {
         //  Creates a layer from the ground layer in the map data.
         //  A Layer is effectively like a Phaser.Sprite, so is added to the display list.
         layerGround = map.createLayer('ground')
-        //layerWalls  = map.createLayer('wall')
+        layerWalls  = map.createLayer('detail')
 
         //  This resizes the game world to match the layerGround dimensions
         layerGround.resizeWorld();
@@ -121,7 +126,7 @@ GameStates.Game.prototype = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //game.world.setBounds(0, 0, 1000, 1000);
         game.physics.setBoundsToWorld()
-        //this.game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
+        game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
         // Creates a group for the zombies
         // Physics groups allow the zombies to collide
@@ -179,6 +184,8 @@ GameStates.Game.prototype = {
 
         // Start generation of zombies 5 seconds in
         setTimeout(generateZombies, 5000);
+		
+		startTime = game.time.time;
     },
     update: function () {
 
@@ -209,7 +216,6 @@ GameStates.Game.prototype = {
           movement();    // checks keyboard and renders player movement
           fire();        // checks if user is firing
 
-
           // Plays player animation based on their movement
           if (currentSpeed > 0) {
             player.animations.play('move');
@@ -220,6 +226,9 @@ GameStates.Game.prototype = {
 
           //tells the server that the player has been moved and should be updated in each client
           socket.emit('move player', { x: player.x, y: player.y });
+		  
+		  //update game timer
+		   currentTime = game.time.time - startTime
     },
     render: function () {
 
@@ -237,6 +246,8 @@ GameStates.Game.prototype = {
                 else{
                     game.debug.text('Client Game', 32, 128);
                 }
+				
+				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );				
         	}
     },
     gotoStateGame: function () {
@@ -251,8 +262,14 @@ GameStates.GameOver.prototype = {
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
-        game.add.text(this.world.centerY-100, this.world.centerX-100, "LOSER")
-        game.add.button(this.world.centerY, this.world.centerX, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
+        game.add.text(100, 100, "You Lost")
+		console.log( "You Lost")
+        game.add.text(100, 150, "Total time: "+ currentTime/1000 + 's')
+        console.log( "Total time: "+ currentTime/1000 + 's')
+        game.add.text(100, 200, "Total kills: "+ zombiesKilled)
+        console.log("Total kills: "+ zombiesKilled)
+		
+        game.add.button(200, 300, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
     },
     update: function () {
     },
@@ -323,7 +340,7 @@ function onNewPlayer (data) {
     return
   }
   // Add new player to the remote players array
-  friends.push(new RemotePlayer(data.id, game, player, data.x, data.y))
+  friends.push(new RemotePlayer(data.id, game, player, data.x, data.y));
 }
 
 // Move player
@@ -337,26 +354,26 @@ function onMovePlayer (data) {
   }
 
   // Update player position
-  movePlayer.player.x = data.x
-  movePlayer.player.y = data.y
+  movePlayer.player.x = data.x;
+  movePlayer.player.y = data.y;
 }
 
 
 // New Zombie
 function onNewZombie (data) {
 
-  // When a new zombie is spawned, each client adds it to their zombie group
-  var zombie = zombies.create(data.x, data.y, 'zombie');
+	  // When a new zombie is spawned, each client adds it to their zombie group
+	  var zombie = zombies.create(data.x, data.y, 'zombie');
 
-  // Sets the size of the zombie for physics purposes
-  zombie.body.setSize(20, 20, 0, 0);
+	  // Sets the size of the zombie for physics purposes
+	  zombie.body.setSize(20, 20, 0, 0);
 
-  //zombies.children[ zombies.length-1 ].id = data.x
-  zombie.id = data.i
-  zombie.animations.add('walk', [4, 5] , 10, true)
-  zombie.animations.play('walk')
-  zombie.anchor.setTo(0.5, 0.5)
-  zombie.bringToTop()
+	  //zombies.children[ zombies.length-1 ].id = data.x
+	  zombie.id = data.i
+	  zombie.animations.add('walk', [4, 5] , 10, true)
+	  zombie.animations.play('walk')
+	  zombie.anchor.setTo(0.5, 0.5)
+	  zombie.bringToTop()
 }
 
 
@@ -379,6 +396,7 @@ function callZombieShot (bullet, zombie) {
   bullet.kill()
   zombie.kill()
   zombiesKilled += 1
+  
   //play sounds for zombie kill
   game.sound.play('zombieAudio');
   socket.emit('zombie shot', { id:zombie.id })
@@ -389,8 +407,10 @@ function callZombieShot (bullet, zombie) {
 function callPlayerKill (player, zombie) {
   player.kill();
   socket.emit('player killed', { id:player.id });
+  
+  gamePlaying = false;
+  socket.disconnect();
   this.state.start('GameOver');
-
 }
 
 // Callback for when a zombie is hit by a bullet
@@ -407,6 +427,7 @@ function onZombieShot (data) {
 		splat.animations.add('splat', [picture])
 		splat.animations.play('splat')
 
+		// Removes zombie
 		zombies.children[i].kill();
 	}
   }
@@ -422,6 +443,7 @@ function onRemovePlayer (data) {
     return;
   }
 
+  // Kill player in each game
   removePlayer.player.kill()
 
   // Remove player from array
@@ -442,67 +464,71 @@ function playerById (id) {
 // PLAYER MOVEMENT FUNCTIONS
 function movement(){
     if (cursors.left.isDown || aKey.isDown) {
-        player.body.velocity.x = -playerMoveSpeed   //moves to the left
+        player.body.velocity.x = -playerMoveSpeed;  	//moves to the left
     }else if (cursors.right.isDown || dKey.isDown) {
-        player.body.velocity.x = +playerMoveSpeed   //moves to the right
+        player.body.velocity.x = +playerMoveSpeed;   	//moves to the right
     }else{
-        player.body.velocity.x = 0      //stays put
+        player.body.velocity.x = 0;      				//stays put
     }
     if (cursors.up.isDown || wKey.isDown) {
-        player.body.velocity.y = -playerMoveSpeed   //moves up
+        player.body.velocity.y = -playerMoveSpeed;   	//moves up
     }
     else if (cursors.down.isDown || sKey.isDown) {
-        player.body.velocity.y = +playerMoveSpeed   //moves down
+        player.body.velocity.y = +playerMoveSpeed;   	//moves down
     }
     else{
-        player.body.velocity.y = 0      //stays put
+        player.body.velocity.y = 0;      				//stays put
     }
+	
     //player sprite will rotate towards the mouse(pointer)
-    player.rotation = game.physics.arcade.angleToPointer(player)
-
+    player.rotation = game.physics.arcade.angleToPointer(player);
 }
 
 function fire(){
+	
+	// Only shoots if left click or space bar are down
     if (game.input.activePointer.leftButton.isDown || spaceBar.isDown )
-   // if (spaceBar.isDown)
     {
+		// Times shots
         if (game.time.now > nextFire && bullets.countDead() > 0 && player.alive )
         {
             //uses game clock to set fire constrains
-            nextFire = game.time.now + playerShootSpeed
+            nextFire = game.time.now + playerShootSpeed;
 
             // grab the first bullet we can from the pool of (5)
-            var bullet = bullets.getFirstExists(false)
+            var bullet = bullets.getFirstExists(false);
 
-            // and fire it towards the mouse(pointer)
-            bullet.reset(player.x+3, player.y);            //sets location to gun
-            game.physics.arcade.moveToPointer(bullet, 300)  //move bullet to mouse with velocity
+			//sets location of bullet
+            bullet.reset(player.x+3, player.y); 
+			
+			//move bullet to mouse with velocity
+            game.physics.arcade.moveToPointer(bullet, 300);  
 
             //the bullet sprite will rotate to face the
             bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer)
-
         }
     }
 }
 
 
 function generateZombies(  ){
+	
     // This is used to ensure zombie does not spawn too close to player
-    var newX = game.world.randomX
-    var newY = game.world.randomy
+    var newX = game.world.randomX;
+    var newY = game.world.randomy;
 
     // calculate difference
-    var deltaX = player.x - newX
-    var deltaY = player.y - newY
+    var deltaX = player.x - newX;
+    var deltaY = player.y - newY;
 
     // Re-generate locations and check again
     while ( !( deltaX > 200 || deltaX < -200) ) {
-      newX = game.world.randomX
-      deltaX = player.x - newX
+      newX = game.world.randomX;
+      deltaX = player.x - newX;
     }
     while ( !( deltaY > 200 || deltaY < -200) ) {
-      newY = game.world.randomY
-      deltaY = player.y - newY
+      newY = game.world.randomY;
+      deltaY = player.y - newY;
     }
 
     // generate zombie once a suitable location is determined
