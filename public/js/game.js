@@ -47,12 +47,14 @@ GameStates.Start.prototype = {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
 
-        game.add.sprite(this.world.centerY-240, this.world.centerX-300, 'title');
+        //game.add.sprite(this.world.centerY,this.world.centerX,'background');
+        game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
+        game.add.sprite(65, 85, 'title');
+        game.add.sprite(175, 200, 'dou');
 
-        game.add.sprite(this.world.centerY-135, this.world.centerX-200, 'dou');
 
-        game.startButton = this.add.button(this.world.centerY, this.world.centerX-100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
-        game.startButton = this.add.button(this.world.centerY+375, this.world.centerX+75, 'info', this.gotoStateInstructions, this, 2, 1, 0);
+        game.startButton = this.add.button(310, 350, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
 
         // Lets the game go full screen when clicked
@@ -81,11 +83,11 @@ GameStates.Instructions.prototype = {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
         // game title
-        game.add.text(this.world.centerY-205, this.world.centerX-375, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'});
+        game.add.text(85, 35, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'});
         // game story
-        game.add.text(this.world.centerY-175, this.world.centerX-300, "A virus has been brought to Texas A&M campus\ninfecting the entire population of College Station,\nturning them into zombies. You are the only\nperson that can protect the remaining survivors.\nYour mission is to serve as our line of defense,\nyour mission is to be our twelfth man and save us.",{font: '15px Courier', fill: '#ffffff'});
+        game.add.text(145, 150, "A virus has been brought to Texas A&M campus\ninfecting the entire population of College Station,\nturning them into zombies. You are the only\nperson that can protect the remaining survivors.\nYour mission is to serve as our line of defense,\nyour mission is to be our twelfth man and save us.",{font: '15px Courier', fill: '#ffffff'});
         // rules
-        game.add.text(this.world.centerY-175, this.world.centerX-100, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
+        game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
 
         game.startButton = this.add.button(this.world.centerY-290, this.world.centerX+95, 'startButton', this.gotoStateStart, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
