@@ -90,8 +90,10 @@ GameStates.Game.prototype = {
         game.load.image('tilesImage', 'assets/tiles.png')
         //game.load.image('earth', 'assets/light_grass.png')
         game.load.image('bullet', 'assets/bullet-2.png')
+
         //game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
         //game.load.spritesheet('startButton','assets/startButton.png')
+
         game.load.spritesheet('dude', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
 
