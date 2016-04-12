@@ -46,17 +46,12 @@ GameStates.Start.prototype = {
     create: function () {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
-<<<<<<< HEAD
+
         //game.add.sprite(this.world.centerY,this.world.centerX,'background');
         game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
         game.add.sprite(65, 85, 'title');
         game.add.sprite(175, 200, 'dou');
-=======
 
-        //game.add.sprite(this.world.centerY-240, this.world.centerX-300, 'title');
-
-        game.add.sprite(this.world.centerY-135, this.world.centerX-200, 'dou');
->>>>>>> origin/master
 
         game.startButton = this.add.button(310, 350, 'startButton', this.gotoStateGame, this, 2, 1, 0);
         game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
