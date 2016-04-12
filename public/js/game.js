@@ -39,17 +39,12 @@ GameStates.Start.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/startButton.png');
         this.load.spritesheet('info','assets/Info-96.png');
-        //this.load.spritesheet('human','assets/human.png ');
-        //this.load.spritesheet('zombie', 'assets/Zombie.png');
         this.load.spritesheet('dou', 'assets/pair.png');
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
         game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
-        //adding human and zombie to start screen
-        //game.add.sprite(this.world.centerY-200, this.world.centerX-200, 'human');
-        //game.add.sprite(this.world.centerY+200, this.world.centerX-200, 'zombie');
         game.add.sprite(this.world.centerY-135, this.world.centerX-200, 'dou');
 
         game.startButton = this.add.button(this.world.centerY, this.world.centerX-100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
@@ -147,6 +142,9 @@ GameStates.Game.prototype = {
         game.physics.setBoundsToWorld()
         game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
+		// Our blood splatter group
+		blood = game.add.group()
+		
         // Creates a group for the zombies
         // Physics groups allow the zombies to collide
         zombies = game.add.physicsGroup()
@@ -161,8 +159,12 @@ GameStates.Game.prototype = {
 		for ( k=0; k < 20; k++) {
 			var car = cars.create( game.world.randomX, game.world.randomY, 'cars')
 			car.body.moves = false
+			car.anchor.setTo(0.5, 0.5)
 			car.animations.add('carImage', [ k%6 ] )
 			car.animations.play('carImage')
+			
+			//var angle = game.world.randomX % 2
+			//car.rotation = angle*90
 		}
 
         // Creates a collection for the other players
@@ -199,9 +201,6 @@ GameStates.Game.prototype = {
 
         // Start listening for events
         setEventHandlers()
-
-        // Our blood splatter group
-		blood = game.add.group()
 
         //  Our bullet group
         bullets = game.add.group()
@@ -459,11 +458,15 @@ function onZombieShot (data) {
         // Creates new blood splatter
 		var splat = blood.create(zombies.children[i].x-50, zombies.children[i].y-20, 'blood');
 		var picture = ( i % 2 )
+		splat.anchor.setTo( 0.5, 0.5 )
+		splat.rotation = game.world.randomX %360
 		splat.animations.add('splat', [picture])
 		splat.animations.play('splat')
+		splat.rotation = game.world.randomX %360
 
 		// Removes zombie
 		zombies.children[i].kill();
+		
 	}
   }
 }
