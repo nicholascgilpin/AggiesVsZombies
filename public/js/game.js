@@ -38,7 +38,7 @@ var backgroundAudio;
 GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
     preload: function () {
-        this.load.spritesheet('startButton','assets/startButton.png');
+        this.load.spritesheet('startButton','assets/button3.png');
         this.load.spritesheet('info','assets/Info-96.png');
         this.load.spritesheet('dou', 'assets/pair.png');
         this.load.spritesheet('title', 'assets/aggie_zombie_title.png');
@@ -56,7 +56,7 @@ GameStates.Start.prototype = {
         game.add.sprite(175, 200, 'dou');
 
 
-        game.startButton = this.add.button(310, 350, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(225, 200, 'startButton', this.gotoStateGame, this, 2, 1, 0);
         game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
 
