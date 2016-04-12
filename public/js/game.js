@@ -35,13 +35,21 @@ GameStates.Start.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/startButton.png');
         this.load.spritesheet('info','assets/Info-96.png');
+        //this.load.spritesheet('human','assets/human.png ');
+        //this.load.spritesheet('zombie', 'assets/Zombie.png');
+        this.load.spritesheet('dou', 'assets/pair.png');
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
-        game.add.text(this.world.centerY-100, this.world.centerX-100, "AGGIES VS ZOMBIES")
-        game.startButton = this.add.button(500, 100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
-        game.startButton = this.add.button(this.world.centerY-100, this.world.centerX-100, 'info', this.gotoStateInstructions, this, 2, 1, 0);
+        game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
+        //adding human and zombie to start screen
+        //game.add.sprite(this.world.centerY-200, this.world.centerX-200, 'human');
+        //game.add.sprite(this.world.centerY+200, this.world.centerX-200, 'zombie');
+        game.add.sprite(this.world.centerY-135, this.world.centerX-200, 'dou');
+
+        game.startButton = this.add.button(this.world.centerY, this.world.centerX-100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(this.world.centerY+375, this.world.centerX+75, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
 
         // Lets the game go full screen when clicked
