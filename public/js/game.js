@@ -15,7 +15,6 @@ var bullets         	// group for players bullets
 var player = null   	// this player
 var friends         	// list of friendly players
 var zombies         	// group for enemy zombies
-var blood				// group for blood splatter sprites
 var zombiesKilled = 0
 var currentSpeed = 0
 var cursors;         	// variable taking input from keyboard
@@ -26,21 +25,20 @@ var sKey;
 var dKey;
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
-
 var debugMode = true // Enables and disables the debug displays
 
-GameStates.Start = function (game) {
-};
-
+GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/startButton.png');
+        this.load.spritesheet('info','assets/Info-96.png');
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
         game.add.text(this.world.centerY-100, this.world.centerX-100, "AGGIES VS ZOMBIES")
-        game.startButton = this.add.button(this.world.centerY, this.world.centerX, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(500, 100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(this.world.centerY-100, this.world.centerX-100, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
 
         // Lets the game go full screen when clicked
@@ -53,44 +51,59 @@ GameStates.Start.prototype = {
     },
     gotoStateGame: function () {
         this.state.start('Game');
+    },
+    gotoStateInstructions: function () {
+        this.state.start('Instructions');
     }
 };
 
-GameStates.Game = function (game) {
+GameStates.Instructions = function (game) {};
+GameStates.Instructions.prototype = {
+    preload: function () {
+        this.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+    },
+    create: function () {
+        game.stage.backgroundColor = '#500000';
+        game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
+        game.add.text(this.world.centerY-100, this.world.centerX-100, "AGGIES VS ZOMBIES")
+        game.startButton = this.add.button(this.world.centerY, this.world.centerX, 'startButton', this.gotoStateStart, this, 2, 1, 0);
+        game.cursors = this.input.keyboard.createCursorKeys();
 
+        // Lets the game go full screen when clicked
+        game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+        game.input.onDown.add(gofull, this)
+    },
+    update: function () {
+    },
+    render: function () {
+    },
+    gotoStateStart: function () {
+        this.state.start('Start');
+    }
 };
 
+GameStates.Game = function (game) {};
 GameStates.Game.prototype = {
     preload: function () {
         // Load the map info and map tile images
-        game.load.tilemap('map', 'assets/tilemap2.json', null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap('map', 'assets/tiles.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tilesImage', 'assets/tiles.png')
-
-        game.load.image('earth', 'assets/light_grass.png')
+        //game.load.image('earth', 'assets/light_grass.png')
         game.load.image('bullet', 'assets/bullet-2.png')
-
-
-        game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
-        game.load.spritesheet('startButton','assets/startButton.png')
-
+        //game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
+        //game.load.spritesheet('startButton','assets/startButton.png')
         game.load.spritesheet('dude', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
-		game.load.spritesheet('blood', 'assets/bloodSplatter.png', 50, 40)
 
+        game.load.audio('zombieAudio', 'assets/audio/ZOMBIE-SOUNDZ-20.wav');
         console.log('Game loaded\n');
     },
     create: function () {
         // Connects to server
         socket = io.connect();
 
-        // Sets the game as arcade physics
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-        //game.world.setBounds(0, 0, 1000, 1000);
-        game.physics.setBoundsToWorld()
+        //this.game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
-		// Allows game to update when window is out of focus
-        game.stage.disableVisibilityChange = true;         
-		
         //  The 'map' key here is the Loader key given in game.load.tilemap
         map = game.add.tilemap('map')
 
@@ -101,10 +114,15 @@ GameStates.Game.prototype = {
         //  Creates a layer from the ground layer in the map data.
         //  A Layer is effectively like a Phaser.Sprite, so is added to the display list.
         layerGround = map.createLayer('ground')
-        layerWalls  = map.createLayer('detail')
+        //layerWalls  = map.createLayer('wall')
 
         //  This resizes the game world to match the layerGround dimensions
         layerGround.resizeWorld();
+        // Sets the game as arcade physics
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        //game.world.setBounds(0, 0, 1000, 1000);
+        game.physics.setBoundsToWorld()
+
 
         // Creates a group for the zombies
         // Physics groups allow the zombies to collide
@@ -146,9 +164,6 @@ GameStates.Game.prototype = {
 
         // Start listening for events
         setEventHandlers()
-		
-		// Our blood splatter group
-		blood = game.add.group()
 
         //  Our bullet group
         bullets = game.add.group()
@@ -214,13 +229,40 @@ GameStates.Game.prototype = {
         		game.debug.body(player);
         		game.debug.body(zombies);
 
-        		if(isHost)
-        			game.debug.text('Host Game', 32, 128);
+        		if(isHost){
+                    game.debug.text('Host Game', 32, 128);
+                }
+                else{
+                    game.debug.text('Client Game', 32, 128);
+                }
         	}
-
-
     },
     gotoStateGame: function () {
+    }
+};
+
+GameStates.GameOver = function (game) {};
+GameStates.GameOver.prototype = {
+    preload: function () {
+        this.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+    },
+    create: function () {
+        game.stage.backgroundColor = '#500000';
+        game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
+        game.add.text(this.world.centerY-100, this.world.centerX-100, "AGGIES VS ZOMBIES")
+        game.startButton = this.add.button(this.world.centerY, this.world.centerX, 'startButton', this.gotoStateStart, this, 2, 1, 0);
+        game.cursors = this.input.keyboard.createCursorKeys();
+
+        // Lets the game go full screen when clicked
+        game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL
+        game.input.onDown.add(gofull, this)
+    },
+    update: function () {
+    },
+    render: function () {
+    },
+    gotoStateStart: function () {
+        this.state.start('Start');
     }
 };
 
@@ -228,12 +270,13 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'Game');
 game.state.add('Start', GameStates.Start);
 game.state.add('Game', GameStates.Game);
 game.state.add('Score', GameStates.Game);
-game.state.start('Start');
+game.state.add('Instructions', GameStates.Instructions);
+game.state.add('GameOver', GameStates.GameOver);
+game.state.start('Start');  //initial state at 'Start'
 
 /* HELPER METHODS */
 function gofull() {
     game.scale.startFullScreen(false)
-    //game.input.mouse.requestPointerLock()
 }
 
 var setEventHandlers = function () {
@@ -251,15 +294,13 @@ var setEventHandlers = function () {
 function onIsHost (data) {
 	if (data.isHost)
 		isHost = true
-
 	else
 		isHost = false
 }
 
 // Callback for when a zombie touches a player
 function onPlayerKill (player, zombie) {
-  // Player is remover/made invisible
-   player.kill()
+   player.kill()   // Player is remover/made invisible
 }
 
 // Socket connected
@@ -319,6 +360,7 @@ function onNewZombie (data) {
   zombie.animations.play('walk')
   zombie.anchor.setTo(0.5, 0.5)
   zombie.bringToTop()
+  game.sound.play('zombieAudio');
 }
 
 
@@ -333,7 +375,6 @@ function onMoveZombie (data) {
   var i
   for ( i = 0; i < zombies.length; i++ ) {
 	zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x, data.y);
-	zombies.children[i].bringToTop();
   }
 
 }
@@ -341,8 +382,9 @@ function onMoveZombie (data) {
 // Callback for when a zombie is hit by a bullet
 function callZombieShot (bullet, zombie) {
   bullet.kill()
-  //zombie.kill()
+  zombie.kill()
   zombiesKilled += 1
+  //play sounds for zombie kill
   socket.emit('zombie shot', { id:zombie.id })
   console.log('shot id: ' + zombie.id)
 }
@@ -351,6 +393,7 @@ function callZombieShot (bullet, zombie) {
 function callPlayerKill (player, zombie) {
   player.kill()
   socket.emit('player killed', { id:player.id })
+  this.state.start('GameOver'); //go to game over state
 }
 
 // Callback for when a zombie is hit by a bullet
@@ -360,14 +403,6 @@ function onZombieShot (data) {
   var i;
   for ( i = 0; i < zombies.length; i++) {
 	if ( zombies.children[i].id === data.id ) {
-		
-		// Creates new blood splatter
-		var splat = blood.create(zombies.children[i].x-50, zombies.children[i].y-20, 'blood');
-		var picture = ( i % 2 )
-		splat.animations.add('splat', [picture])
-		splat.animations.play('splat')
-		
-		// Removes Zombie
 		zombies.children[i].kill();
 	}
   }
