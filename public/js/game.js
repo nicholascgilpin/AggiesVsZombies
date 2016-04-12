@@ -33,6 +33,7 @@ var currentTime = 0
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
 var debugMode = true // Enables and disables the debug displays
+var backgroundAudio;
 
 GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
@@ -42,8 +43,10 @@ GameStates.Start.prototype = {
         this.load.spritesheet('dou', 'assets/pair.png');
         this.load.spritesheet('title', 'assets/aggie_zombie_title.png');
         //this.load.image('background', 'assets/background_maybe.png')
+        backgroundAudio = game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
     },
     create: function () {
+
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
 
@@ -108,7 +111,7 @@ GameStates.Instructions.prototype = {
 GameStates.Game = function (game) {};
 GameStates.Game.prototype = {
     preload: function () {
-		
+
         // Load the map info and map tile images
         game.load.tilemap('map', 'assets/tilemap2.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tilesImage', 'assets/tiles.png')
@@ -120,6 +123,7 @@ GameStates.Game.prototype = {
         game.load.spritesheet('blood', 'assets/bloodSplatter.png', 50, 40)
         game.load.spritesheet('cars', 'assets/carsLarge.png', 54, 100)
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
+        game.load.audio('bangAudio', 'assets/audio/bang.wav');
         console.log('Game loaded\n');
     },
     create: function () {
@@ -127,18 +131,18 @@ GameStates.Game.prototype = {
         socket = io.connect();
 
 		gamePlaying = true;
-		
+
         //  The 'map' key here is the Loader key given in game.load.tilemap
-        map = game.add.tilemap('map')
+        map = game.add.tilemap('map');
 
         //  The first parameter is the tileset name, as specified in the Tiled map editor (and in the tilemap json file)
         //  The second parameter maps this name to the Phaser.Cache key 'tiles'
-        map.addTilesetImage('tiles', 'tilesImage')
+        map.addTilesetImage('tiles', 'tilesImage');
 
         //  Creates a layer from the ground layer in the map data.
         //  A Layer is effectively like a Phaser.Sprite, so is added to the display list.
-        layerGround = map.createLayer('ground')
-        layerWalls  = map.createLayer('detail')
+        layerGround = map.createLayer('ground');
+        layerWalls  = map.createLayer('detail');
 
         //  This resizes the game world to match the layerGround dimensions
         layerGround.resizeWorld();
@@ -160,7 +164,7 @@ GameStates.Game.prototype = {
 		cars = game.add.physicsGroup()
 		cars.enableBody = true
 		cars.physicsBodyType = Phaser.Physics.arcade
-		
+
 		var k
 		for ( k=0; k < 20; k++) {
 			var car = cars.create( game.world.randomX, game.world.randomY, 'cars')
@@ -196,7 +200,7 @@ GameStates.Game.prototype = {
         game.camera.follow(player)
         game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300)
         game.camera.focusOnXY(0, 0)
-		
+
         // Creates Phaser keyboard
         cursors = game.input.keyboard.createCursorKeys()
         spaceBar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR )
@@ -217,11 +221,12 @@ GameStates.Game.prototype = {
         bullets.setAll('player.y', 1);
         bullets.setAll('outOfBoundsKill', true)
         bullets.setAll('checkWorldBounds', true)
-	  
+
         // Start generation of zombies 5 seconds in
         setTimeout(generateZombies, 5000);
-		
+
 		startTime = game.time.time;
+        game.sound.play('backgroundAudio');
     },
     update: function () {
 
@@ -247,11 +252,11 @@ GameStates.Game.prototype = {
 
 		  // Allows collision detection between player and zombies and calls onPlayerKilled
 		  game.physics.arcade.collide(player, zombies, callPlayerKill, null, this)
-		  
+
 		  game.physics.arcade.collide(player, cars, null, null, this)
 		  game.physics.arcade.collide(zombies, cars, null, null, this)
 		  game.physics.arcade.collide(bullets, cars, function(bullet, car) { bullet.kill() }, null, this)
-  
+
           // Calls movement and fire functions for player to act
           movement();    // checks keyboard and renders player movement
           fire();        // checks if user is firing
@@ -266,7 +271,7 @@ GameStates.Game.prototype = {
 
           //tells the server that the player has been moved and should be updated in each client
           socket.emit('move player', { x: player.x, y: player.y });
-		  
+
 		  //update game timer
 		   currentTime = game.time.time - startTime
     },
@@ -286,8 +291,8 @@ GameStates.Game.prototype = {
                 else{
                     game.debug.text('Client Game', 32, 128);
                 }
-				
-				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );				
+
+				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
         	}
     },
     gotoStateGame: function () {
@@ -308,22 +313,23 @@ GameStates.GameOver.prototype = {
         console.log( "Total time: "+ currentTime/1000 + 's')
         game.add.text(100, 300, "Total kills: "+ zombiesKilled)
         console.log("Total kills: "+ zombiesKilled)
-		
-        game.add.button(30, 495, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
+        game.add.button(200, 300, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
+
     },
     update: function () {
     },
     render: function () {
     },
     fromGameOvertoStart: function () {
-        this.state.start('Start');
+        console.log("From Game Over to Start");
+        game.state.start('Start');
     }
 };
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'Game');
 game.state.add('Start', GameStates.Start);
 game.state.add('Game', GameStates.Game);
-game.state.add('Score', GameStates.Game);
+//game.state.add('Score', GameStates.Game);
 game.state.add('Instructions', GameStates.Instructions);
 game.state.add('GameOver', GameStates.GameOver);
 game.state.start('Start');  //initial state at 'Start'
@@ -436,7 +442,7 @@ function callZombieShot (bullet, zombie) {
   bullet.kill()
   zombie.kill()
   zombiesKilled += 1
-  
+
   //play sounds for zombie kill
   game.sound.play('zombieAudio');
   socket.emit('zombie shot', { id:zombie.id })
@@ -447,10 +453,10 @@ function callZombieShot (bullet, zombie) {
 function callPlayerKill (player, zombie) {
   player.kill();
   socket.emit('player killed', { id:player.id });
-  
+
   gamePlaying = false;
   socket.disconnect();
-  this.state.start('GameOver');
+  game.state.start('GameOver');
 }
 
 // Callback for when a zombie is hit by a bullet
@@ -523,13 +529,13 @@ function movement(){
     else{
         player.body.velocity.y = 0;      				//stays put
     }
-	
+
     //player sprite will rotate towards the mouse(pointer)
     player.rotation = game.physics.arcade.angleToPointer(player);
 }
 
 function fire(){
-	
+
 	// Only shoots if left click or space bar are down
     if (game.input.activePointer.leftButton.isDown || spaceBar.isDown )
     {
@@ -541,13 +547,13 @@ function fire(){
 
             // grab the first bullet we can from the pool of (5)
             var bullet = bullets.getFirstExists(false);
+            game.sound.play('bangAudio');
 
 			//sets location of bullet
-            bullet.reset(player.x+3, player.y); 
-			
+            bullet.reset(player.x+3, player.y);
+
 			//move bullet to mouse with velocity
             game.physics.arcade.moveToPointer(bullet, 3000);
-
 
             //the bullet sprite will rotate to face the
             bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer)
@@ -557,7 +563,7 @@ function fire(){
 
 
 function generateZombies(  ){
-	
+
     // This is used to ensure zombie does not spawn too close to player
     var newX = game.world.randomX;
     var newY = game.world.randomy;
