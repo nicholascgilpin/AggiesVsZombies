@@ -1,9 +1,0 @@
-{
-  "name": "Aggies vs. Zombies",
-  "description": "A small game using Node.js for CSCE315.",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "author": "Gerardo Vazquez",
-  "keywords": ["node", "express", "static"],
-  "image": "heroku/nodejs"
-}
