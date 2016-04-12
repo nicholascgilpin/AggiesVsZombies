@@ -39,17 +39,16 @@ GameStates.Start.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/startButton.png');
         this.load.spritesheet('info','assets/Info-96.png');
-        //this.load.spritesheet('human','assets/human.png ');
-        //this.load.spritesheet('zombie', 'assets/Zombie.png');
         this.load.spritesheet('dou', 'assets/pair.png');
+        this.load.spritesheet('title', 'assets/aggie_zombie_title.png');
+        //this.load.image('background', 'assets/background_maybe.png')
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
-        game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
-        //adding human and zombie to start screen
-        //game.add.sprite(this.world.centerY-200, this.world.centerX-200, 'human');
-        //game.add.sprite(this.world.centerY+200, this.world.centerX-200, 'zombie');
+        //game.add.sprite(this.world.centerY,this.world.centerX,'background');
+        //game.add.text(this.world.centerY-205, this.world.centerX-300, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'})
+        game.add.sprite(this.world.centerY-240, this.world.centerX-300, 'title');
         game.add.sprite(this.world.centerY-135, this.world.centerX-200, 'dou');
 
         game.startButton = this.add.button(this.world.centerY, this.world.centerX-100, 'startButton', this.gotoStateGame, this, 2, 1, 0);
@@ -86,7 +85,7 @@ GameStates.Instructions.prototype = {
         // game story
         game.add.text(this.world.centerY-175, this.world.centerX-300, "A virus has been brought to Texas A&M campus\ninfecting the entire population of College Station,\nturning them into zombies. You are the only\nperson that can protect the remaining survivors.\nYour mission is to serve as our line of defense,\nyour mission is to be our twelfth man and save us.",{font: '15px Courier', fill: '#ffffff'});
         // rules
-        game.add.text(this.world.centerY-175, this.world.centerX-100, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your arrow keys or AWSD to\naim your gun and click to shoot",{font: '15px Courier', fill: '#ffffff'});
+        game.add.text(this.world.centerY-175, this.world.centerX-100, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
 
         game.startButton = this.add.button(this.world.centerY-290, this.world.centerX+95, 'startButton', this.gotoStateStart, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
@@ -297,14 +296,14 @@ GameStates.GameOver.prototype = {
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
-        game.add.text(100, 100, "You Lost")
+        game.add.text(100, 100, "You Lost",{font: '60px Courier', fill: '#ffffff'})
 		console.log( "You Lost")
-        game.add.text(100, 150, "Total time: "+ currentTime/1000 + 's')
+        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's')
         console.log( "Total time: "+ currentTime/1000 + 's')
-        game.add.text(100, 200, "Total kills: "+ zombiesKilled)
+        game.add.text(100, 300, "Total kills: "+ zombiesKilled)
         console.log("Total kills: "+ zombiesKilled)
 		
-        game.add.button(200, 300, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
+        game.add.button(30, 495, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
     },
     update: function () {
     },
