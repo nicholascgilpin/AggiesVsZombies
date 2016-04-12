@@ -16,6 +16,10 @@ var player = null   	// this player
 var friends         	// list of friendly players
 var zombies         	// group for enemy zombies
 var blood				// group for blood splatter sprites
+var cars;
+var car1;
+var car2;
+var car3;
 var zombiesKilled = 0
 var currentSpeed = 0
 var cursors;         	// variable taking input from keyboard
@@ -95,10 +99,11 @@ GameStates.Game.prototype = {
         game.load.image('tilesImage', 'assets/tiles.png')
         game.load.image('earth', 'assets/light_grass.png')
 
-        game.load.image('bullet', 'assets/bullet-2.png')
+        game.load.image('bullet', 'assets/bullet-3.png')
         game.load.spritesheet('dude', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('blood', 'assets/bloodSplatter.png', 50, 40)
+        game.load.spritesheet('cars', 'assets/carsLarge.png', 54, 100)
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
         console.log('Game loaded\n');
     },
@@ -134,6 +139,18 @@ GameStates.Game.prototype = {
         zombies.enableBody = true
         zombies.physicsBodyType = Phaser.Physics.arcade
 
+		cars = game.add.physicsGroup()
+		cars.enableBody = true
+		cars.physicsBodyType = Phaser.Physics.arcade
+		
+		var k
+		for ( k=0; k < 20; k++) {
+			var car = cars.create( game.world.randomX, game.world.randomY, 'cars')
+			car.body.moves = false
+			car.animations.add('carImage', [ k%6 ] )
+			car.animations.play('carImage')
+		}
+
         // Creates a collection for the other players
         friends = []
 
@@ -157,7 +174,7 @@ GameStates.Game.prototype = {
         game.camera.follow(player)
         game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300)
         game.camera.focusOnXY(0, 0)
-
+		
         // Creates Phaser keyboard
         cursors = game.input.keyboard.createCursorKeys()
         spaceBar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR )
@@ -181,7 +198,7 @@ GameStates.Game.prototype = {
         bullets.setAll('player.y', 1);
         bullets.setAll('outOfBoundsKill', true)
         bullets.setAll('checkWorldBounds', true)
-
+	  
         // Start generation of zombies 5 seconds in
         setTimeout(generateZombies, 5000);
 		
@@ -200,18 +217,22 @@ GameStates.Game.prototype = {
             }
           }
 
-          // Tells server to send out location zombies should move towards
-          socket.emit('move zombie');
+		  // Tells server to send out location zombies should move towards
+		  socket.emit( 'move zombie')
 
-          // Allows collision detection between bullets and zombies and calls onZombieShot
-          game.physics.arcade.collide(bullets, zombies, callZombieShot, null, this);
+		  // Allows collision detection between bullets and zombies and calls onZombieShot
+		  game.physics.arcade.collide(bullets, zombies, callZombieShot, null, this)
 
-          // Prevents zombies from overlapping
-          game.physics.arcade.collide(zombies, zombies, null, null, this);
+		  // Prevents zombies from overlapping
+		  game.physics.arcade.collide(zombies, zombies, null, null, this)
 
-          // Allows collision detection between player and zombies and calls onPlayerKilled
-          game.physics.arcade.collide(player, zombies, callPlayerKill, null, this);
-
+		  // Allows collision detection between player and zombies and calls onPlayerKilled
+		  game.physics.arcade.collide(player, zombies, callPlayerKill, null, this)
+		  
+		  game.physics.arcade.collide(player, cars, null, null, this)
+		  game.physics.arcade.collide(zombies, cars, null, null, this)
+		  game.physics.arcade.collide(bullets, cars, function(bullet, car) { bullet.kill() }, null, this)
+  
           // Calls movement and fire functions for player to act
           movement();    // checks keyboard and renders player movement
           fire();        // checks if user is firing
@@ -502,7 +523,8 @@ function fire(){
             bullet.reset(player.x+3, player.y); 
 			
 			//move bullet to mouse with velocity
-            game.physics.arcade.moveToPointer(bullet, 300);  
+            game.physics.arcade.moveToPointer(bullet, 3000);
+
 
             //the bullet sprite will rotate to face the
             bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer)
