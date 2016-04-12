@@ -91,8 +91,13 @@ GameStates.Game.prototype = {
         //game.load.image('earth', 'assets/light_grass.png')
         game.load.image('bullet', 'assets/bullet-2.png')
 
+<<<<<<< HEAD
         //game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
         //game.load.spritesheet('startButton','assets/startButton.png')
+=======
+        game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
+        game.load.spritesheet('startButton','assets/startButton.png')
+>>>>>>> parent of fcb78da... Added blood splatter effect and changed map
 
         game.load.spritesheet('dude', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
@@ -106,6 +111,11 @@ GameStates.Game.prototype = {
 
         //this.game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
+<<<<<<< HEAD
+=======
+        //this.game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
+
+>>>>>>> parent of fcb78da... Added blood splatter effect and changed map
         //  The 'map' key here is the Loader key given in game.load.tilemap
         map = game.add.tilemap('map')
 
