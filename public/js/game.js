@@ -15,6 +15,7 @@ var bullets         	// group for players bullets
 var player = null   	// this player
 var friends         	// list of friendly players
 var zombies         	// group for enemy zombies
+var blood				// group for blood splatter sprites
 var zombiesKilled = 0
 var currentSpeed = 0
 var cursors;         	// variable taking input from keyboard
@@ -62,17 +63,19 @@ GameStates.Game = function (game) {
 GameStates.Game.prototype = {
     preload: function () {
         // Load the map info and map tile images
-        game.load.tilemap('map', 'assets/tiles.json', null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap('map', 'assets/tilemap2.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('tilesImage', 'assets/tiles.png')
 
         game.load.image('earth', 'assets/light_grass.png')
         game.load.image('bullet', 'assets/bullet-2.png')
+
 
         game.load.spritesheet('pauseButton', 'assets/pauseButtons.png')
         game.load.spritesheet('startButton','assets/startButton.png')
 
         game.load.spritesheet('dude', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
+		game.load.spritesheet('blood', 'assets/bloodSplatter.png', 50, 40)
 
         console.log('Game loaded\n');
     },
@@ -85,8 +88,9 @@ GameStates.Game.prototype = {
         //game.world.setBounds(0, 0, 1000, 1000);
         game.physics.setBoundsToWorld()
 
-        //this.game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
-
+		// Allows game to update when window is out of focus
+        game.stage.disableVisibilityChange = true;         
+		
         //  The 'map' key here is the Loader key given in game.load.tilemap
         map = game.add.tilemap('map')
 
@@ -97,7 +101,7 @@ GameStates.Game.prototype = {
         //  Creates a layer from the ground layer in the map data.
         //  A Layer is effectively like a Phaser.Sprite, so is added to the display list.
         layerGround = map.createLayer('ground')
-        //layerWalls  = map.createLayer('wall')
+        layerWalls  = map.createLayer('detail')
 
         //  This resizes the game world to match the layerGround dimensions
         layerGround.resizeWorld();
@@ -142,6 +146,9 @@ GameStates.Game.prototype = {
 
         // Start listening for events
         setEventHandlers()
+		
+		// Our blood splatter group
+		blood = game.add.group()
 
         //  Our bullet group
         bullets = game.add.group()
@@ -326,6 +333,7 @@ function onMoveZombie (data) {
   var i
   for ( i = 0; i < zombies.length; i++ ) {
 	zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x, data.y);
+	zombies.children[i].bringToTop();
   }
 
 }
@@ -333,7 +341,7 @@ function onMoveZombie (data) {
 // Callback for when a zombie is hit by a bullet
 function callZombieShot (bullet, zombie) {
   bullet.kill()
-  zombie.kill()
+  //zombie.kill()
   zombiesKilled += 1
   socket.emit('zombie shot', { id:zombie.id })
   console.log('shot id: ' + zombie.id)
@@ -352,6 +360,14 @@ function onZombieShot (data) {
   var i;
   for ( i = 0; i < zombies.length; i++) {
 	if ( zombies.children[i].id === data.id ) {
+		
+		// Creates new blood splatter
+		var splat = blood.create(zombies.children[i].x-50, zombies.children[i].y-20, 'blood');
+		var picture = ( i % 2 )
+		splat.animations.add('splat', [picture])
+		splat.animations.play('splat')
+		
+		// Removes Zombie
 		zombies.children[i].kill();
 	}
   }
