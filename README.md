@@ -11,11 +11,11 @@ The following are the **current** functionalities implemented:
 - [x] Sprites
 - [x] Titlemaps
 - [x] Server running accepting sockets (not shown in walkthrough)
-- [x] World collision
 
 The following are the **future** features to be implemented:
 - [ ] Multiplayer (zombies and players without lag)
 - [ ] Menu
+- [ ] World collision
 - [ ] Lives count
 
 ## Demo
