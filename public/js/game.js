@@ -17,9 +17,7 @@ var friends         	// list of friendly players
 var zombies         	// group for enemy zombies
 var blood				// group for blood splatter sprites
 var cars;
-var car1;
-var car2;
-var car3;
+var ammoPacks;
 var zombiesKilled = 0
 var currentSpeed = 0
 var cursors;         	// variable taking input from keyboard
@@ -30,6 +28,8 @@ var sKey;
 var dKey;
 var startTime
 var currentTime = 0
+var maxAmmo = 30
+var currentAmmo = maxAmmo
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
 var debugMode = true // Enables and disables the debug displays
@@ -122,6 +122,7 @@ GameStates.Game.prototype = {
         game.load.spritesheet('zombie', 'assets/sprities.png', 100, 100);
         game.load.spritesheet('blood', 'assets/bloodSplatter.png', 50, 40)
         game.load.spritesheet('cars', 'assets/carsLarge.png', 54, 100)
+        game.load.spritesheet('ammo', 'assets/ammo3.png', 25, 19)
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
         game.load.audio('bangAudio', 'assets/audio/bang.wav');
         console.log('Game loaded\n');
@@ -154,6 +155,10 @@ GameStates.Game.prototype = {
 
 		// Our blood splatter group
 		blood = game.add.group()
+		
+		ammoPacks = game.add.physicsGroup()
+		ammoPacks.enableBody = true
+		ammoPacks.physicsBodyType = Phaser.Physics.arcade
 		
         // Creates a group for the zombies
         // Physics groups allow the zombies to collide
@@ -212,6 +217,8 @@ GameStates.Game.prototype = {
         // Start listening for events
         setEventHandlers()
 
+		currentAmmo = maxAmmo;
+		
         //  Our bullet group
         bullets = game.add.group()
         bullets.enableBody = true
@@ -224,7 +231,8 @@ GameStates.Game.prototype = {
 
         // Start generation of zombies 5 seconds in
         setTimeout(generateZombies, 5000);
-
+		setTimeout(generateAmmo, 5000);
+		
 		startTime = game.time.time;
         game.sound.play('backgroundAudio');
     },
@@ -256,6 +264,8 @@ GameStates.Game.prototype = {
 		  game.physics.arcade.collide(player, cars, null, null, this)
 		  game.physics.arcade.collide(zombies, cars, null, null, this)
 		  game.physics.arcade.collide(bullets, cars, function(bullet, car) { bullet.kill() }, null, this)
+		  
+		  game.physics.arcade.collide(player, ammoPacks, function(player, ammo) { ammo.kill(); currentAmmo = maxAmmo; }, null, this)
 
           // Calls movement and fire functions for player to act
           movement();    // checks keyboard and renders player movement
@@ -293,6 +303,7 @@ GameStates.Game.prototype = {
                 }
 
 				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
+				game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 170 );
         	}
     },
     gotoStateGame: function () {
@@ -537,11 +548,13 @@ function movement(){
 function fire(){
 
 	// Only shoots if left click or space bar are down
-    if (game.input.activePointer.leftButton.isDown || spaceBar.isDown )
+    if ( game.input.activePointer.leftButton.isDown || spaceBar.isDown )
     {
-		// Times shots
-        if (game.time.now > nextFire && bullets.countDead() > 0 && player.alive )
+		// Times shots and check ammo 
+        if (game.time.now > nextFire && bullets.countDead() > 0 && player.alive && currentAmmo > 0 )
         {
+			currentAmmo--;
+			
             //uses game clock to set fire constrains
             nextFire = game.time.now + playerShootSpeed;
 
@@ -587,4 +600,15 @@ function generateZombies(  ){
 
     // call itself recursively to continually generate zombies
     setTimeout(generateZombies, zombieSpawnSpeed);
+}
+
+function generateAmmo(  ){
+	if (ammoPacks.length < 10 ) {
+		var ammo = ammoPacks.create( game.world.randomX, game.world.randomY, 'ammo')
+		ammo.body.moves = false
+		ammo.anchor.setTo(0.5, 0.5)
+	}
+	
+    // call itself recursively to continually generate ammo
+    setTimeout(generateAmmo, 2000);
 }
