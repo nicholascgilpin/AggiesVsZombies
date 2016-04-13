@@ -30,6 +30,7 @@ var startTime
 var currentTime = 0
 var maxAmmo = 30
 var currentAmmo = maxAmmo
+var reload;
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
 var debugMode = true // Enables and disables the debug displays
@@ -46,6 +47,7 @@ GameStates.Start.prototype = {
         //this.load.image('background', 'assets/background_maybe.png')
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
         game.load.audio('bangAudio', 'assets/audio/bang.wav');
+        game.load.audio('reload', 'assets/audio/reload.wav');
         game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
     },
     create: function () {
@@ -164,11 +166,11 @@ GameStates.Game.prototype = {
 
 		// Our blood splatter group
 		blood = game.add.group()
-		
+
 		ammoPacks = game.add.physicsGroup()
 		ammoPacks.enableBody = true
 		ammoPacks.physicsBodyType = Phaser.Physics.arcade
-		
+
         // Creates a group for the zombies
         // Physics groups allow the zombies to collide
         zombies = game.add.physicsGroup()
@@ -227,7 +229,7 @@ GameStates.Game.prototype = {
         setEventHandlers()
 
 		currentAmmo = maxAmmo;
-		
+
         //  Our bullet group
         bullets = game.add.group()
         bullets.enableBody = true
@@ -241,11 +243,12 @@ GameStates.Game.prototype = {
         // Start generation of zombies 5 seconds in
         setTimeout(generateZombies, 5000);
 		setTimeout(generateAmmo, 5000);
-		
+
 		startTime = game.time.time;
 
         backgroundAudio = game.add.audio('backgroundAudio');
-        backgroundAudio.play();
+        reload =  game.add.audio('reload');
+        backgroundAudio.loopFull();
     },
     update: function () {
 
@@ -275,8 +278,12 @@ GameStates.Game.prototype = {
 		  game.physics.arcade.collide(player, cars, null, null, this)
 		  game.physics.arcade.collide(zombies, cars, null, null, this)
 		  game.physics.arcade.collide(bullets, cars, function(bullet, car) { bullet.kill() }, null, this)
-		  
-		  game.physics.arcade.collide(player, ammoPacks, function(player, ammo) { ammo.kill(); currentAmmo = maxAmmo; }, null, this)
+
+		  game.physics.arcade.collide(player, ammoPacks, function(player, ammo) {
+              ammo.kill();
+              currentAmmo = maxAmmo;
+              reload.play();
+          }, null, this)
 
           // Calls movement and fire functions for player to act
           movement();    // checks keyboard and renders player movement
@@ -312,7 +319,7 @@ GameStates.Game.prototype = {
                     game.debug.text('Client Game', 32, 128);
                 }
 				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
-				
+
 				game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 170 );
 
                 if (zombieSpawnSpeed == 350){
@@ -624,11 +631,11 @@ function fire(){
 	// Only shoots if left click or space bar are down
     if ( game.input.activePointer.leftButton.isDown || spaceBar.isDown )
     {
-		// Times shots and check ammo 
+		// Times shots and check ammo
         if (game.time.now > nextFire && bullets.countDead() > 0 && player.alive && currentAmmo > 0 )
         {
 			currentAmmo--;
-			
+
             //uses game clock to set fire constrains
             nextFire = game.time.now + playerShootSpeed;
 
@@ -682,7 +689,7 @@ function generateAmmo(  ){
 		ammo.body.moves = false
 		ammo.anchor.setTo(0.5, 0.5)
 	}
-	
+
     // call itself recursively to continually generate ammo
     setTimeout(generateAmmo, 2000);
 }
