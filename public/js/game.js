@@ -35,6 +35,7 @@ var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
 var debugMode = false // Enables and disables the debug displays
 var backgroundAudio;
+var gamePlaying = false;
 
 GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
@@ -680,12 +681,14 @@ function generateZombies(  ){
 }
 
 function generateAmmo(  ){
-	if (ammoPacks.length < 10 ) {
+
+	if (ammoPacks.length < 10  && gamePlaying) {
 		var ammo = ammoPacks.create( game.world.randomX, game.world.randomY, 'ammo')
 		ammo.body.moves = false
 		ammo.anchor.setTo(0.5, 0.5)
 	}
 
     // call itself recursively to continually generate ammo
-    setTimeout(generateAmmo, 2000);
+    if (gamePlaying)
+        setTimeout(generateAmmo, 2000);
 }
