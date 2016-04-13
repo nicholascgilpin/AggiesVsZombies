@@ -38,7 +38,7 @@ var backgroundAudio;
 GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
     preload: function () {
-        this.load.spritesheet('startButton','assets/startButton.png');
+        this.load.spritesheet('startButton','assets/button3.png');
         this.load.spritesheet('info','assets/Info-96.png');
         this.load.spritesheet('settings','assets/Settings-96.png');
         this.load.spritesheet('dou', 'assets/pair.png');
@@ -58,7 +58,7 @@ GameStates.Start.prototype = {
         game.add.sprite(65, 85, 'title');
         game.add.sprite(175, 200, 'dou');
 
-        game.startButton = this.add.button(310, 350, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(225, 200, 'startButton', this.gotoStateGame, this, 2, 1, 0);
         game.startButton = this.add.button(25, 485, 'settings', this.gotoStateSettings, this, 2, 1, 0);
         game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
@@ -99,6 +99,7 @@ GameStates.Instructions.prototype = {
         game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
 
         game.startButton = this.add.button(0, 500, 'startButton', this.gotoStateStart, this, 2, 1, 0);
+
         game.cursors = this.input.keyboard.createCursorKeys();
 
         // Lets the game go full screen when clicked
@@ -317,7 +318,7 @@ GameStates.GameOver.prototype = {
         console.log( "Total time: "+ currentTime/1000 + 's')
         game.add.text(100, 300, "Total kills: "+ zombiesKilled)
         console.log("Total kills: "+ zombiesKilled)
-        game.add.button(200, 300, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
+        game.add.button(25, 500, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
 
     },
     update: function () {
