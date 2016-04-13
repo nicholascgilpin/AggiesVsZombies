@@ -46,9 +46,10 @@ GameStates.Start.prototype = {
         //this.load.image('background', 'assets/background_maybe.png')
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
         game.load.audio('bangAudio', 'assets/audio/bang.wav');
-        backgroundAudio = game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
+        game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
     },
     create: function () {
+
 
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
@@ -231,7 +232,9 @@ GameStates.Game.prototype = {
         setTimeout(generateZombies, 5000);
 
 		startTime = game.time.time;
-        game.sound.play('backgroundAudio');
+
+        backgroundAudio = game.add.audio('backgroundAudio');
+        backgroundAudio.play();
     },
     update: function () {
 
@@ -289,15 +292,27 @@ GameStates.Game.prototype = {
                 game.debug.text('Player coordinates: ' + player.x + ',' + player.y, 32,96);
         		game.debug.body(player);
         		game.debug.body(zombies);
-
         		if(isHost){
                     game.debug.text('Host Game', 32, 128);
                 }
                 else{
                     game.debug.text('Client Game', 32, 128);
                 }
-
 				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
+
+                if (zombieSpawnSpeed == 350){
+                    game.debug.text( 'Level: Easy', 32, 172 );
+                }
+                else if (zombieSpawnSpeed == 700){
+                    game.debug.text( 'Level: Medium', 32, 172 );
+                }
+                else if (zombieSpawnSpeed == 1400){
+                    game.debug.text( 'Level: Hard', 32, 172 );
+                }
+                else{
+                    game.debug.text( 'Level: FIX ME!', 32, 172 );
+                }
+
         	}
     },
     gotoStateGame: function () {
@@ -363,18 +378,21 @@ GameStates.Settings.prototype = {
         playerMoveSpeed = 175;   // Default = 150
         playerShootSpeed = 150;  // Default = 150
         console.log('Level Easy');
+        game.state.start('Start');
     },
     mediumLevel: function () {
         zombieSpawnSpeed = 700;  // Default = 700
         playerMoveSpeed = 150;   // Default = 150
         playerShootSpeed = 150;  // Default = 150
         console.log('Level Medium');
+        game.state.start('Start');
     },
     hardLevel: function () {
         zombieSpawnSpeed = 1400;  // Default = 700
         playerMoveSpeed = 50;   // Default = 150
         playerShootSpeed = 450;  // Default = 150
         console.log('Level Hard');
+        game.state.start('Start');
     }
 };
 
@@ -508,6 +526,7 @@ function callPlayerKill (player, zombie) {
 
   gamePlaying = false;
   socket.disconnect();
+  backgroundAudio.pause();
   game.state.start('GameOver');
 }
 
