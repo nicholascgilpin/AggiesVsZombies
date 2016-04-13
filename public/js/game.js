@@ -40,12 +40,16 @@ GameStates.Start.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/button3.png');
         this.load.spritesheet('info','assets/Info-96.png');
+        this.load.spritesheet('settings','assets/Settings-96.png');
         this.load.spritesheet('dou', 'assets/pair.png');
         this.load.spritesheet('title', 'assets/aggie_zombie_title.png');
         //this.load.image('background', 'assets/background_maybe.png')
-        backgroundAudio = game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
+        game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
+        game.load.audio('bangAudio', 'assets/audio/bang.wav');
+        game.load.audio('backgroundAudio', 'assets/audio/crypto.mp3');
     },
     create: function () {
+
 
         game.stage.backgroundColor = '#500000';
         game.physics.startSystem(Phaser.Physics.ARCADE); // Sets the game as arcade physics
@@ -55,8 +59,8 @@ GameStates.Start.prototype = {
         game.add.sprite(65, 85, 'title');
         game.add.sprite(175, 200, 'dou');
 
-
         game.startButton = this.add.button(225, 200, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(25, 485, 'settings', this.gotoStateSettings, this, 2, 1, 0);
         game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
 
@@ -73,6 +77,9 @@ GameStates.Start.prototype = {
     },
     gotoStateInstructions: function () {
         this.state.start('Instructions');
+    },
+    gotoStateSettings: function () {
+        this.state.start('Settings');
     }
 };
 
@@ -92,7 +99,8 @@ GameStates.Instructions.prototype = {
         // rules
         game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
 
-        game.startButton = this.add.button(25, 500, 'startButton', this.gotoStateStart, this, 2, 1, 0);
+        game.startButton = this.add.button(0, 500, 'startButton', this.gotoStateStart, this, 2, 1, 0);
+
         game.cursors = this.input.keyboard.createCursorKeys();
 
         // Lets the game go full screen when clicked
@@ -125,6 +133,7 @@ GameStates.Game.prototype = {
         game.load.spritesheet('ammo', 'assets/ammo3.png', 25, 19)
         game.load.audio('zombieAudio', 'assets/audio/zombies/zombie-24.wav');
         game.load.audio('bangAudio', 'assets/audio/bang.wav');
+
         console.log('Game loaded\n');
     },
     create: function () {
@@ -177,7 +186,7 @@ GameStates.Game.prototype = {
 			car.anchor.setTo(0.5, 0.5)
 			car.animations.add('carImage', [ k%6 ] )
 			car.animations.play('carImage')
-			
+
 			//var angle = game.world.randomX % 2
 			//car.rotation = angle*90
 		}
@@ -234,7 +243,9 @@ GameStates.Game.prototype = {
 		setTimeout(generateAmmo, 5000);
 		
 		startTime = game.time.time;
-        game.sound.play('backgroundAudio');
+
+        backgroundAudio = game.add.audio('backgroundAudio');
+        backgroundAudio.play();
     },
     update: function () {
 
@@ -294,16 +305,28 @@ GameStates.Game.prototype = {
                 game.debug.text('Player coordinates: ' + player.x + ',' + player.y, 32,96);
         		game.debug.body(player);
         		game.debug.body(zombies);
-
         		if(isHost){
                     game.debug.text('Host Game', 32, 128);
                 }
                 else{
                     game.debug.text('Client Game', 32, 128);
                 }
-
 				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
+				
 				game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 170 );
+
+                if (zombieSpawnSpeed == 350){
+                    game.debug.text( 'Level: Easy', 32, 172 );
+                }
+                else if (zombieSpawnSpeed == 700){
+                    game.debug.text( 'Level: Medium', 32, 172 );
+                }
+                else if (zombieSpawnSpeed == 1400){
+                    game.debug.text( 'Level: Hard', 32, 172 );
+                }
+                else{
+                    game.debug.text( 'Level: FIX ME!', 32, 172 );
+                }
         	}
     },
     gotoStateGame: function () {
@@ -337,12 +360,62 @@ GameStates.GameOver.prototype = {
     }
 };
 
+GameStates.Settings = function (game) {};
+GameStates.Settings.prototype = {
+    preload: function () {
+        game.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+        game.load.spritesheet('one','assets/1C-96.png');
+        game.load.spritesheet('two','assets/2C-96.png');
+        game.load.spritesheet('three','assets/3C-96.png');
+        console.log('Settings loaded\n');
+    },
+    create: function () {
+        //map size is 800, 600
+        game.stage.backgroundColor = '#500000';
+        game.add.button(0, 500, 'startButton', this.gotoStart, this, 2, 1, 0);
+        game.add.text(85, 35, "AGGIES VS ZOMBIES",{font: '60px Courier', fill: '#ffffff'});
+        game.add.text(300, 250, "Difficulty",{font: '30px Courier', fill: '#ffffff'});
+        game.add.button(400-48-96, 250+48, 'one', this.easyLevel, this, 2, 1, 0);
+        game.add.button(400-48, 250+48, 'two', this.mediumLevel, this, 2, 1, 0);
+        game.add.button(400-48+96, 250+48, 'three', this.hardLevel, this, 2, 1, 0);
+
+    },
+    update: function () {
+    },
+    render: function () {
+    },
+    gotoStart: function () {
+        this.state.start('Start');
+    },
+    easyLevel: function () {
+        zombieSpawnSpeed = 350;  // Default = 700
+        playerMoveSpeed = 175;   // Default = 150
+        playerShootSpeed = 150;  // Default = 150
+        console.log('Level Easy');
+        game.state.start('Start');
+    },
+    mediumLevel: function () {
+        zombieSpawnSpeed = 700;  // Default = 700
+        playerMoveSpeed = 150;   // Default = 150
+        playerShootSpeed = 150;  // Default = 150
+        console.log('Level Medium');
+        game.state.start('Start');
+    },
+    hardLevel: function () {
+        zombieSpawnSpeed = 1400;  // Default = 700
+        playerMoveSpeed = 50;   // Default = 150
+        playerShootSpeed = 450;  // Default = 150
+        console.log('Level Hard');
+        game.state.start('Start');
+    }
+};
+
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'Game');
 game.state.add('Start', GameStates.Start);
 game.state.add('Game', GameStates.Game);
-//game.state.add('Score', GameStates.Game);
 game.state.add('Instructions', GameStates.Instructions);
 game.state.add('GameOver', GameStates.GameOver);
+game.state.add('Settings', GameStates.Settings);
 game.state.start('Start');  //initial state at 'Start'
 
 /* HELPER METHODS */
@@ -467,6 +540,7 @@ function callPlayerKill (player, zombie) {
 
   gamePlaying = false;
   socket.disconnect();
+  backgroundAudio.pause();
   game.state.start('GameOver');
 }
 
@@ -489,7 +563,7 @@ function onZombieShot (data) {
 
 		// Removes zombie
 		zombies.children[i].kill();
-		
+
 	}
   }
 }
