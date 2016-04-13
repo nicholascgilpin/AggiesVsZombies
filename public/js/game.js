@@ -32,7 +32,7 @@ var maxAmmo = 30
 var currentAmmo = maxAmmo
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
-var debugMode = true // Enables and disables the debug displays
+var debugMode = false // Enables and disables the debug displays
 var backgroundAudio;
 
 GameStates.Start = function (game) {};
@@ -300,34 +300,29 @@ GameStates.Game.prototype = {
 
         	// Displays list of active bullets to determine current ammo of players
         	if (debugMode){
-        		game.debug.text('Active Bullets: ' + bullets.countLiving() + '/' + 5  , 32, 32);
-                game.debug.text('Zombies Killed: ' + zombiesKilled, 32, 64);
-                game.debug.text('Player coordinates: ' + player.x + ',' + player.y, 32,96);
+        		game.debug.text('Active Bullets: ' + bullets.countLiving() + '/' + 5  , 500, 60);
+                
+                game.debug.text('Player coordinates: ' + player.x + ',' + player.y, 500, 90);
         		game.debug.body(player);
         		game.debug.body(zombies);
-        		if(isHost){
-                    game.debug.text('Host Game', 32, 128);
-                }
-                else{
-                    game.debug.text('Client Game', 32, 128);
-                }
-				game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 150 );
-				
-				game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 170 );
+			}
+			
+			game.debug.text('Zombies Killed: ' + zombiesKilled, 32, 30);
+			game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 60 );
+			game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 100 );
 
-                if (zombieSpawnSpeed == 350){
-                    game.debug.text( 'Level: Easy', 32, 172 );
-                }
-                else if (zombieSpawnSpeed == 700){
-                    game.debug.text( 'Level: Medium', 32, 172 );
-                }
-                else if (zombieSpawnSpeed == 1400){
-                    game.debug.text( 'Level: Hard', 32, 172 );
-                }
-                else{
-                    game.debug.text( 'Level: FIX ME!', 32, 172 );
-                }
-        	}
+            if (zombieSpawnSpeed == 350){
+                game.debug.text( 'Level: Easy', 600, 30 );
+            }
+            else if (zombieSpawnSpeed == 700){
+                game.debug.text( 'Level: Medium', 600, 30 );
+            }
+            else if (zombieSpawnSpeed == 1400){
+                game.debug.text( 'Level: Hard', 600, 30 );
+            }
+            else{
+                game.debug.text( 'Level: FIX ME!', 600, 30 );
+            }
     },
     gotoStateGame: function () {
 
