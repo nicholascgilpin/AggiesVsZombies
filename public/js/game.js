@@ -476,7 +476,7 @@ GameStates.Settings.prototype = {
         zombieSpawnSpeed = 1000;  	// Default = 700
         playerMoveSpeed = 175;   	// Default = 150
         playerShootSpeed = 50;  	// Default = 150
-		maxAmmo = 50 				// Default = 30
+		maxAmmo = 500 				// Default = 30
         console.log('Level Easy');
         game.state.start('Start');
     },
