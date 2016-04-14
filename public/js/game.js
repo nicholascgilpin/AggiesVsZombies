@@ -35,7 +35,7 @@ var currentAmmo = maxAmmo
 var reload;
 var fireRate = 150  //variable that holds milliseconds
 var nextFire = 0    //resets for each fire
-var debugMode = false // Enables and disables the debug displays
+var debugMode = true // Enables and disables the debug displays
 var backgroundAudio;
 var gamePlaying = false;
 
@@ -64,7 +64,7 @@ GameStates.Start.prototype = {
         game.add.sprite(65, 85, 'title');
         game.add.sprite(175, 200, 'dou');
 
-        game.startButton = this.add.button(225, 200, 'startButton', this.gotoStateGame, this, 2, 1, 0);
+        game.startButton = this.add.button(330, 350, 'startButton', this.gotoStateGame, this, 2, 1, 0);
         game.startButton = this.add.button(25, 485, 'settings', this.gotoStateSettings, this, 2, 1, 0);
         game.startButton = this.add.button(675, 485, 'info', this.gotoStateInstructions, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
@@ -166,7 +166,7 @@ GameStates.Game.prototype = {
         //game.world.setBounds(0, 0, 1000, 1000);
         game.physics.setBoundsToWorld()
         
-		//game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
+		game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
 		// Our blood splatter group
 		blood = game.add.group()
@@ -185,18 +185,49 @@ GameStates.Game.prototype = {
 		cars.enableBody = true
 		cars.physicsBodyType = Phaser.Physics.arcade
 
-		var k
-		for ( k=0; k < 20; k++) {
-			var car = cars.create( game.world.randomX, game.world.randomY, 'cars')
-			car.body.moves = false
-			car.anchor.setTo(0.5, 0.5)
-			car.animations.add('carImage', [ k%6 ] )
-			car.animations.play('carImage')
+		// var k
+		// for ( k=0; k < 20; k++) {
+			// var car = cars.create( game.world.randomX, game.world.randomY, 'cars')
+			// car.body.moves = false
+			// car.anchor.setTo(0.5, 0.5)
+			// car.animations.add('carImage', [ k%6 ] )
+			// car.animations.play('carImage')
 
-			//var angle = game.world.randomX % 2
-			//car.rotation = angle*90
-		}
+			// //var angle = game.world.randomX % 2
+			// //car.rotation = angle*90
+		// }
+		
+		generateCar( 400, 300, false)
+		generateCar( 400, 405, false)
+		generateCar( 450, 220, true )
+		generateCar( 575, 390, false )
+		generateCar( 855, 260, true )
+		generateCar( 1150, 380, true )
+		generateCar( 875, 510, true )
 
+		generateCar( 1295, 300, false)
+		generateCar( 1295, 450, false)
+		generateCar( 1293, 590, false)
+		generateCar( 1297, 710, false)
+		generateCar( 1290, 825, false)
+		generateCar( 1295, 940, false)
+		generateCar( 1295, 1040, false)
+		generateCar( 1305, 1300, false)
+		generateCar( 1295, 1450, false)
+		generateCar( 1300, 1650, false)
+		generateCar( 1295, 1770, false)
+		
+		generateCar( 1385, 230, false)
+		generateCar( 1385, 340, false)
+		generateCar( 1385, 490, false)
+		generateCar( 1385, 715, false)
+		generateCar( 1385, 835, false)
+		generateCar( 1385, 1940, false)
+		generateCar( 1385, 1140, false)
+		generateCar( 1385, 1330, false)
+		generateCar( 1385, 1470, false)
+		generateCar( 1385, 1750, false)
+		
         // Creates a collection for the other players
         friends = []
 
@@ -301,9 +332,6 @@ GameStates.Game.prototype = {
             player.animations.play('stop');
           }
 
-          //tells the server that the player has been moved and should be updated in each client
-          socket.emit('move player', { x: player.x, y: player.y });
-
 		  //update game timer
 		  currentTime = game.time.time - startTime;
 		   
@@ -317,7 +345,8 @@ GameStates.Game.prototype = {
         	if (debugMode){
         		game.debug.text('Active Bullets: ' + bullets.countLiving() + '/' + 5  , 500, 60);
 
-                game.debug.text('Player coordinates: ' + player.x + ',' + player.y, 500, 90);
+                game.debug.text('Player coordinates X: ' + player.x , 450, 90);
+                game.debug.text('Player coordinates Y:   ' + player.y, 450, 100);
         		game.debug.body(player);
         		game.debug.body(zombies);
 			}
@@ -538,9 +567,7 @@ function onNewPlayer (data) {
 // Move player
 function onMovePlayer (data) {
   var movePlayer = playerById(data.id)
-
-  console.log( 'player moved')
-  
+ 
   // Player not found
   if (!movePlayer) {
     console.log('Player moved not found: ', data.id)
@@ -691,6 +718,11 @@ function movement(){
 
     //player sprite will rotate towards the mouse(pointer)
     player.rotation = game.physics.arcade.angleToPointer(player);
+	
+	
+		  //tells the server that the player has been moved and should be updated in each client
+	  socket.emit('move player', { x: player.x, y: player.y });
+
 }
 
 function fire(){
@@ -752,7 +784,7 @@ function generateZombies(  ){
 
 function generateAmmo(  ){
 
-	if (ammoPacks.length < 10  && gamePlaying) {
+	if (ammoPacks.length < 30  && gamePlaying) {
 		var ammo = ammoPacks.create( game.world.randomX, game.world.randomY, 'ammo')
 		ammo.body.moves = false
 		ammo.anchor.setTo(0.5, 0.5)
@@ -761,4 +793,20 @@ function generateAmmo(  ){
     // call itself recursively to continually generate ammo
     if (gamePlaying)
         setTimeout(generateAmmo, 2000);
+}
+
+function generateCar( x, y , turned){
+
+	var car = cars.create( x, y, 'cars')
+	car.body.moves = false
+	car.anchor.setTo(0.5, 0.5)
+	
+	var picture = game.world.randomX % 6
+	car.animations.add('carImage', [ picture ] )
+	car.animations.play('carImage')
+
+	if ( turned ) {
+		car.body.setSize(100, 54, 0, 0);
+		car.rotation = game.physics.arcade.moveToXY(car, 1000, x-100000, y )
+	}
 }
