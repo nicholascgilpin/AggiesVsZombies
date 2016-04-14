@@ -601,15 +601,17 @@ function onNewZombie (data) {
 // Move Zombie
 function onMoveZombie (data) {
 
-  // The server sends the destination to the clients, and the clients then tell their zombies to move there
-  zombies.forEach(game.physics.arcade.moveToXY,  game.physics.arcade, null, data.x, data.y);
-
-  // Angles the zombie towards the player
-  var i
-  for ( i = 0; i < zombies.length; i++ ) {
-	zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x, data.y);
+  for ( i = 0; i < zombies.length; i++) {
+	//zombies.children[i].id === data.id ) {
+	if ( (i%2) === 0 ) {
+		game.physics.arcade.moveToXY( zombies.children[i], data.x1, data.y1, 80);
+		zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x1, data.y1);
+	}
+	else {
+		game.physics.arcade.moveToXY( zombies.children[i], data.x2, data.y2, 80);
+		zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x2, data.y2);
+	}
   }
-
 }
 
 // Callback for when a zombie is hit by a bullet
