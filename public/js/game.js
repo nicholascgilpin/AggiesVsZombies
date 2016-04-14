@@ -29,7 +29,7 @@ var sKey;
 var dKey;
 var startTime
 var currentTime = 0
-var endTime = 200000
+var endTime = 120000
 var maxAmmo = 30
 var currentAmmo = maxAmmo
 var reload;
@@ -628,13 +628,12 @@ function onZombieShot (data) {
 	if ( zombies.children[i].id === data.id ) {
 
         // Creates new blood splatter
-		var splat = blood.create(zombies.children[i].x-50, zombies.children[i].y-20, 'blood');
-		var picture = ( i % 2 )
+		var splat = blood.create(zombies.children[i].x-35, zombies.children[i].y-30, 'blood');
+		var picture = ( i % 5 )
 		splat.anchor.setTo( 0.5, 0.5 )
 		splat.rotation = game.world.randomX %360
 		splat.animations.add('splat', [picture])
 		splat.animations.play('splat')
-		splat.rotation = game.world.randomX %360
 
 		// Removes zombie
 		zombies.children[i].kill();
