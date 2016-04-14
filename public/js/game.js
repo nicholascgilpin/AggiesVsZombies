@@ -29,7 +29,7 @@ var sKey;
 var dKey;
 var startTime
 var currentTime = 0
-var endTime = 20000
+var endTime = 200000
 var maxAmmo = 30
 var currentAmmo = maxAmmo
 var reload;
@@ -42,7 +42,7 @@ var gamePlaying = false;
 GameStates.Start = function (game) {};
 GameStates.Start.prototype = {
     preload: function () {
-        this.load.spritesheet('startButton','assets/button3.png');
+        this.load.spritesheet('startButton','assets/button32.png');
         this.load.spritesheet('info','assets/Info-96.png');
         this.load.spritesheet('settings','assets/Settings-96.png');
         this.load.spritesheet('dou', 'assets/pair.png');
@@ -165,7 +165,8 @@ GameStates.Game.prototype = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //game.world.setBounds(0, 0, 1000, 1000);
         game.physics.setBoundsToWorld()
-        game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
+        
+		//game.stage.disableVisibilityChange = true;         // Allows game to update when window is out of focus
 
 		// Our blood splatter group
 		blood = game.add.group()
@@ -353,21 +354,20 @@ GameStates.GameOver.prototype = {
         game.stage.backgroundColor = '#500000';
         game.add.text(100, 100, "You Lost",{font: '60px Courier', fill: '#ffffff'})
 		console.log( "You Lost")
-        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's')
+        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's', {fill:'#ffffff'})
         console.log( "Total time: "+ currentTime/1000 + 's')
-        game.add.text(100, 250, "Total kills: "+ zombiesKilled)
-        game.add.text(100, 300, "Difficulty: ")
+        game.add.text(100, 250, "Total kills: "+ zombiesKilled, {fill:'#ffffff'})
         console.log("Total kills: "+ zombiesKilled)
         game.add.button(25, 500, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
 		
 		if( difficulty == 1 ) {
-			 game.add.text(100, 300, "Difficulty: Easy")
+			 game.add.text(100, 300, "Difficulty: Easy", {fill:'#ffffff'})
 		}
 		else if( difficulty == 2 ) {
-			 game.add.text(100, 300, "Difficulty: Medium")
+			 game.add.text(100, 300, "Difficulty: Medium", {fill:'#ffffff'})
 		}
 		else if( difficulty == 3 ) {
-			 game.add.text(100, 300, "Difficulty: Hard")
+			 game.add.text(100, 300, "Difficulty: Hard", {fill:'#ffffff'})
 		}
     },
     update: function () {
@@ -389,20 +389,20 @@ GameStates.GameWon.prototype = {
         game.stage.backgroundColor = '#500000';
         game.add.text(100, 100, "You Won!",{font: '60px Courier', fill: '#ffffff'})
 		console.log( "You Won!")
-        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's')
+        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's', {fill:'#ffffff'})
         console.log( "Total time: "+ currentTime/1000 + 's')
-        game.add.text(100, 250, "Total kills: "+ zombiesKilled)
+        game.add.text(100, 250, "Total kills: "+ zombiesKilled, {fill:'#ffffff'})
         console.log("Total kills: "+ zombiesKilled)
         game.add.button(25, 500, 'startButton', this.fromGameWontoStart, this, 2, 1, 0);
 		
 		if( difficulty == 1 ) {
-			 game.add.text(100, 300, "Difficulty: Easy")
+			 game.add.text(100, 300, "Difficulty: Easy", {fill:'#ffffff'})
 		}
 		else if( difficulty == 2 ) {
-			 game.add.text(100, 300, "Difficulty: Medium")
+			 game.add.text(100, 300, "Difficulty: Medium", {fill:'#ffffff'})
 		}
 		else if( difficulty == 3 ) {
-			 game.add.text(100, 300, "Difficulty: Hard")
+			 game.add.text(100, 300, "Difficulty: Hard", {fill:'#ffffff'})
 		}
     },
     update: function () {
@@ -446,7 +446,7 @@ GameStates.Settings.prototype = {
 		difficulty = 1;
         zombieSpawnSpeed = 1000;  	// Default = 700
         playerMoveSpeed = 175;   	// Default = 150
-        playerShootSpeed = 150;  	// Default = 150
+        playerShootSpeed = 50;  	// Default = 150
 		maxAmmo = 50 				// Default = 30
         console.log('Level Easy');
         game.state.start('Start');
@@ -464,8 +464,8 @@ GameStates.Settings.prototype = {
 		difficulty = 3;
         zombieSpawnSpeed = 350;	  	// Default = 700
         playerMoveSpeed = 125;   	// Default = 150
-        playerShootSpeed = 450;  	// Default = 150
-		maxAmmo = 20 				// Default = 30
+        playerShootSpeed = 150;  	// Default = 150
+		maxAmmo = 30				// Default = 30
         console.log('Level Hard');
         game.state.start('Start');
     }
@@ -539,9 +539,11 @@ function onNewPlayer (data) {
 function onMovePlayer (data) {
   var movePlayer = playerById(data.id)
 
+  console.log( 'player moved')
+  
   // Player not found
   if (!movePlayer) {
-    console.log('Player not found: ', data.id)
+    console.log('Player moved not found: ', data.id)
     return
   }
 
