@@ -28,6 +28,7 @@ var sKey;
 var dKey;
 var startTime
 var currentTime = 0
+var endTime = 20000
 var maxAmmo = 30
 var currentAmmo = maxAmmo
 var fireRate = 150  //variable that holds milliseconds
@@ -294,7 +295,11 @@ GameStates.Game.prototype = {
           socket.emit('move player', { x: player.x, y: player.y });
 
 		  //update game timer
-		   currentTime = game.time.time - startTime
+		  currentTime = game.time.time - startTime;
+		   
+		  if ( currentTime >= endTime ) 
+			   callPlayerKill(player, null);
+			
     },
     render: function () {
 
@@ -383,23 +388,26 @@ GameStates.Settings.prototype = {
         this.state.start('Start');
     },
     easyLevel: function () {
-        zombieSpawnSpeed = 350;  // Default = 700
-        playerMoveSpeed = 175;   // Default = 150
-        playerShootSpeed = 150;  // Default = 150
+        zombieSpawnSpeed = 350;  	// Default = 700
+        playerMoveSpeed = 175;   	// Default = 150
+        playerShootSpeed = 150;  	// Default = 150
+		maxAmmo = 50 				// Default = 30
         console.log('Level Easy');
         game.state.start('Start');
     },
     mediumLevel: function () {
-        zombieSpawnSpeed = 700;  // Default = 700
-        playerMoveSpeed = 150;   // Default = 150
-        playerShootSpeed = 150;  // Default = 150
+        zombieSpawnSpeed = 700;  	// Default = 700
+        playerMoveSpeed = 150;   	// Default = 150
+        playerShootSpeed = 150;  	// Default = 150
+		maxAmmo = 30 				// Default = 30
         console.log('Level Medium');
         game.state.start('Start');
     },
     hardLevel: function () {
         zombieSpawnSpeed = 1400;  // Default = 700
-        playerMoveSpeed = 50;   // Default = 150
-        playerShootSpeed = 450;  // Default = 150
+        playerMoveSpeed = 125;   	// Default = 150
+        playerShootSpeed = 450;  	// Default = 150
+		maxAmmo = 20 				// Default = 30
         console.log('Level Hard');
         game.state.start('Start');
     }
