@@ -9,6 +9,7 @@ var isHost = false; 	// Determines whether it sends zombie locations to server
 var zombieSpawnSpeed = 700;  // Default = 700
 var playerMoveSpeed = 150   // Default = 150
 var playerShootSpeed = 150  // Default = 150
+var difficulty = 2;		// Easy:1 	Medium:2 	Hard:3
 var socket          	// Socket connection
 var land            	// terrain sprite
 var bullets         	// group for players bullets
@@ -306,7 +307,7 @@ GameStates.Game.prototype = {
 		  currentTime = game.time.time - startTime;
 		   
 		  if ( currentTime >= endTime ) 
-			   callPlayerKill(player, null);
+			   callPlayerWon(player);
 			
     },
     render: function () {
@@ -324,13 +325,13 @@ GameStates.Game.prototype = {
 			game.debug.text( 'Game Time: ' + currentTime/1000 + 's' , 32, 60 );
 			game.debug.text( 'Current Ammo: ' + currentAmmo + '/' + maxAmmo, 32, 100 );
 
-            if (zombieSpawnSpeed == 350){
+            if ( difficulty == 1 ){
                 game.debug.text( 'Level: Easy', 600, 30 );
             }
-            else if (zombieSpawnSpeed == 700){
+            else if ( difficulty == 2 ){
                 game.debug.text( 'Level: Medium', 600, 30 );
             }
-            else if (zombieSpawnSpeed == 1400){
+            else if ( difficulty == 3 ){
                 game.debug.text( 'Level: Hard', 600, 30 );
             }
             else{
@@ -354,10 +355,20 @@ GameStates.GameOver.prototype = {
 		console.log( "You Lost")
         game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's')
         console.log( "Total time: "+ currentTime/1000 + 's')
-        game.add.text(100, 300, "Total kills: "+ zombiesKilled)
+        game.add.text(100, 250, "Total kills: "+ zombiesKilled)
+        game.add.text(100, 300, "Difficulty: ")
         console.log("Total kills: "+ zombiesKilled)
         game.add.button(25, 500, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
-
+		
+		if( difficulty == 1 ) {
+			 game.add.text(100, 300, "Difficulty: Easy")
+		}
+		else if( difficulty == 2 ) {
+			 game.add.text(100, 300, "Difficulty: Medium")
+		}
+		else if( difficulty == 3 ) {
+			 game.add.text(100, 300, "Difficulty: Hard")
+		}
     },
     update: function () {
     },
@@ -365,6 +376,41 @@ GameStates.GameOver.prototype = {
     },
     fromGameOvertoStart: function () {
         console.log("From Game Over to Start");
+        game.state.start('Start');
+    }
+};
+
+GameStates.GameWon = function (game) {};
+GameStates.GameWon.prototype = {
+    preload: function () {
+        this.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+    },
+    create: function () {
+        game.stage.backgroundColor = '#500000';
+        game.add.text(100, 100, "You Won!",{font: '60px Courier', fill: '#ffffff'})
+		console.log( "You Won!")
+        game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's')
+        console.log( "Total time: "+ currentTime/1000 + 's')
+        game.add.text(100, 250, "Total kills: "+ zombiesKilled)
+        console.log("Total kills: "+ zombiesKilled)
+        game.add.button(25, 500, 'startButton', this.fromGameWontoStart, this, 2, 1, 0);
+		
+		if( difficulty == 1 ) {
+			 game.add.text(100, 300, "Difficulty: Easy")
+		}
+		else if( difficulty == 2 ) {
+			 game.add.text(100, 300, "Difficulty: Medium")
+		}
+		else if( difficulty == 3 ) {
+			 game.add.text(100, 300, "Difficulty: Hard")
+		}
+    },
+    update: function () {
+    },
+    render: function () {
+    },
+    fromGameWontoStart: function () {
+        console.log("From Game Won to Start");
         game.state.start('Start');
     }
 };
@@ -397,7 +443,8 @@ GameStates.Settings.prototype = {
         this.state.start('Start');
     },
     easyLevel: function () {
-        zombieSpawnSpeed = 350;  	// Default = 700
+		difficulty = 1;
+        zombieSpawnSpeed = 1000;  	// Default = 700
         playerMoveSpeed = 175;   	// Default = 150
         playerShootSpeed = 150;  	// Default = 150
 		maxAmmo = 50 				// Default = 30
@@ -405,6 +452,7 @@ GameStates.Settings.prototype = {
         game.state.start('Start');
     },
     mediumLevel: function () {
+		difficulty = 2;
         zombieSpawnSpeed = 700;  	// Default = 700
         playerMoveSpeed = 150;   	// Default = 150
         playerShootSpeed = 150;  	// Default = 150
@@ -413,7 +461,8 @@ GameStates.Settings.prototype = {
         game.state.start('Start');
     },
     hardLevel: function () {
-        zombieSpawnSpeed = 1400;  // Default = 700
+		difficulty = 3;
+        zombieSpawnSpeed = 350;	  	// Default = 700
         playerMoveSpeed = 125;   	// Default = 150
         playerShootSpeed = 450;  	// Default = 150
 		maxAmmo = 20 				// Default = 30
@@ -427,6 +476,7 @@ game.state.add('Start', GameStates.Start);
 game.state.add('Game', GameStates.Game);
 game.state.add('Instructions', GameStates.Instructions);
 game.state.add('GameOver', GameStates.GameOver);
+game.state.add('GameWon', GameStates.GameWon);
 game.state.add('Settings', GameStates.Settings);
 game.state.start('Start');  //initial state at 'Start'
 
@@ -554,6 +604,17 @@ function callPlayerKill (player, zombie) {
   socket.disconnect();
   backgroundAudio.pause();
   game.state.start('GameOver');
+}
+
+// Callback for when a player wins
+function callPlayerWon (player) {
+  player.kill();
+  socket.emit('player killed', { id:player.id });
+
+  gamePlaying = false;
+  socket.disconnect();
+  backgroundAudio.pause();
+  game.state.start('GameWon');
 }
 
 // Callback for when a zombie is hit by a bullet
