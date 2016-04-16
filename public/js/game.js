@@ -378,9 +378,11 @@ GameStates.GameOver = function (game) {};
 GameStates.GameOver.prototype = {
     preload: function () {
         this.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+        this.load.spritesheet('zombiehuman', 'assets/newzombiemem1.png')
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
+        game.add.sprite(350,200,'zombiehuman');
         game.add.text(100, 100, "You Lost",{font: '60px Courier', fill: '#ffffff'})
 		console.log( "You Lost")
         game.add.text(100, 200, "Total time: "+ currentTime/1000 + 's', {fill:'#ffffff'})
