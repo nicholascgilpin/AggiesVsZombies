@@ -19,7 +19,7 @@ This is an online multiplayer game under development that uses Node.js and Phase
 ####Local Demo
 - Install [Node.js](https://nodejs.org/en/download/).
 - Download the [Demo](https://github.tamu.edu/LosChimichangos/D4/archive/master.zip).
-- Visit folder in terminal "D4-master" -> "lib" 
+- Visit folder in terminal "D6-master" -> "lib" 
 - Type "npm install" ([Tutorial](https://docs.npmjs.com/getting-started/installing-npm-packages-locally)).
 - Start Node by typing "node game.js"
 - Open Chrome and go to [http://localhost:8080/](http://localhost:8080/)
