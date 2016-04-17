@@ -5,11 +5,11 @@ This is an online multiplayer game under development that uses Node.js and Phase
 
 ## CSCE 315
 ###Code location
-- All client side code is contained in public\js\ \n
-    game.js is the largest file handling game states and events
-- All media is contained in public\assets \n
-- All server side code is contained in lib directory  \n
-    game.js is the largest file containing most server functionality 
+- All client side code is contained in public\js\ 
+    - - game.js is the largest file handling game states and events
+- All media is contained in public\assets 
+- All server side code is contained in lib directory  
+    - - game.js is the largest file containing most server functionality 
     
 ### Demo
 ####Live Demo
