@@ -1,22 +1,9 @@
-# D4
+# D6
 # Aggies vs Zombies
 This is an online multiplayer game under development that uses Node.js and Phaser.io
 
 
 ## CSCE 315
-The following are the **current** functionalities implemented:
-- [x] Fullscreen game
-- [x] Shoots
-- [x] Zombie spawn
-- [x] Sprites
-- [x] Titlemaps
-- [x] Server running accepting sockets (not shown in walkthrough)
-
-The following are the **future** features to be implemented:
-- [ ] Multiplayer (zombies and players without lag)
-- [ ] Menu
-- [ ] World collision
-- [ ] Lives count
 
 ## Demo
 ####Live Demo
