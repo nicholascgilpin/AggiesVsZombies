@@ -124,6 +124,7 @@ GameStates.Instructions.prototype = {
 		
 		// Load button back to start state
         game.load.spritesheet('startButton','assets/CircledLeft2-96.png');
+        game.load.spritesheet('ammo', 'assets/ammo3.png', 25, 19)
     },
     create: function () {
         game.stage.backgroundColor = '#500000';
@@ -138,7 +139,9 @@ GameStates.Instructions.prototype = {
         game.add.text(145, 150, "A virus has been brought to Texas A&M campus\ninfecting the entire population of College Station,\nturning them into zombies. You are the only\nperson that can protect the remaining survivors.\nYour mission is to serve as our line of defense,\nyour mission is to be our twelfth man and save us.",{font: '15px Courier', fill: '#ffffff'});
         
 		// rules
-        game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
+        game.add.text(145, 300, "Rules:\n1. Use your arrow keys or WASD to move around the game.\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\n\tleft click to shoot. \n4. Ammo is not unlimited! Keep an eye on your ammo levels \n\tand pick up more when you can.\n5. You can invite one friend to help you play by accessing \n\tthis webpage on their computer. \n6. Try and survive 2 minutes to win the game!",{font: '15px Courier', fill: '#ffffff'}); 
+		
+		game.add.sprite(425, 425, 'ammo');
 
         game.startButton = this.add.button(0, 500, 'startButton', this.gotoStateStart, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
@@ -264,7 +267,7 @@ GameStates.Game.prototype = {
         bullets = game.add.group()
         bullets.enableBody = true
         bullets.physicsBodyType = Phaser.Physics.ARCADE
-        bullets.createMultiple(5, 'bullet')
+        bullets.createMultiple(6, 'bullet')
         bullets.setAll('player.x', 0.5);
         bullets.setAll('player.y', 1);
         bullets.setAll('outOfBoundsKill', true)
