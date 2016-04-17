@@ -138,7 +138,7 @@ GameStates.Instructions.prototype = {
         game.add.text(145, 150, "A virus has been brought to Texas A&M campus\ninfecting the entire population of College Station,\nturning them into zombies. You are the only\nperson that can protect the remaining survivors.\nYour mission is to serve as our line of defense,\nyour mission is to be our twelfth man and save us.",{font: '15px Courier', fill: '#ffffff'});
         
 		// rules
-        game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n- A moves the human to the left\n- S moves the human to the down\n- W moves the human to the up\n- D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot",{font: '15px Courier', fill: '#ffffff'});
+        game.add.text(145, 300, "Rules:\n1. Use your arrow keys or ASWD to move around the game.\n      - A moves the human to the left\n      - S moves the human to the down\n      - W moves the human to the up\n      - D moves the human to the right\n2. Do not let the zombies touch you or you will die\n3. To kill the zombies use your mouse to aim your gun and\nclick to shoot\n4. You do not have unlimited ammo to kill the zombies,\nso you must collect the ammo packs distributed throughout\nthe game. You can have a max of 30, and the meter will indicate\nhow much ammo you have exhausted." ,{font: '13px Courier', fill: '#ffffff'});
 
         game.startButton = this.add.button(0, 500, 'startButton', this.gotoStateStart, this, 2, 1, 0);
         game.cursors = this.input.keyboard.createCursorKeys();
