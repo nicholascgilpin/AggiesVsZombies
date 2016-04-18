@@ -398,7 +398,9 @@ GameStates.GameOver.prototype = {
         console.log("Total kills: "+ zombiesKilled);
 
         game.add.button(25, 500, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
-
+        
+        // Remove Zombies
+        zombies.removeAll();
 		// Display difficulty
 		if( difficulty == 1 ) {
 			 game.add.text(100, 300, "Difficulty: Easy", {fill:'#ffffff'});
