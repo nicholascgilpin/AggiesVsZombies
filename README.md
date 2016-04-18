@@ -25,8 +25,8 @@ This is an online multiplayer game under development that uses Node.js and Phase
 - Open Chrome and go to [http://localhost:8080/](http://localhost:8080/)
 
 ## Video Walkthrough 
-Example of current game: 
+Demo of current game: 
 <img src='https://github.tamu.edu/LosChimichangos/D6/blob/master/Animation2.gif?raw=true' title='Walkthrough after Revision' width='' alt='Video Walkthrough' />
 
-This is a small example of the game: 
+This is the first demo: 
 <img src='https://github.tamu.edu/raw/LosChimichangos/D6/master/Animation.gif?token=AAAGmEmakHbT86Ve1ZcTvw4mVdGHYo1vks5XHYpMwA%3D%3D' title='Walkthrough before Revision' width='' alt='Video Walkthrough' />
