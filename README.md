@@ -18,7 +18,7 @@ This is an online multiplayer game under development that uses Node.js and Phase
 
 ####Local Demo
 - Install [Node.js](https://nodejs.org/en/download/).
-- Download the [Demo](https://github.tamu.edu/LosChimichangos/D4/archive/master.zip).
+- Download the [Demo](https://github.tamu.edu/LosChimichangos/D6/archive/master.zip).
 - Visit folder in terminal "D6-master" -> "lib" 
 - Type "npm install" ([Tutorial](https://docs.npmjs.com/getting-started/installing-npm-packages-locally)).
 - Start Node by typing "node game.js"
@@ -26,4 +26,4 @@ This is an online multiplayer game under development that uses Node.js and Phase
 
 ## Video Walkthrough 
 This is a small example of the game: 
-<img src='https://github.tamu.edu/raw/LosChimichangos/D4/master/Animation.gif?token=AAAGmNCMweH6Zf_QTZVCtf6Ww_4x_11Nks5XCx_OwA%3D%3D' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.tamu.edu/raw/LosChimichangos/D6/master/Animation.gif?token=AAAGmEmakHbT86Ve1ZcTvw4mVdGHYo1vks5XHYpMwA%3D%3D' title='Walkthrough before Revision' width='' alt='Video Walkthrough' />
