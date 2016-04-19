@@ -1,15 +1,50 @@
 <!doctype html>
 <html lang='en'>
   <head>
-    <meta charset='UTF-8' />
+    <meta charset="utf-8">
+
     <title>CSCE315 Game</title>
-    <link type='text/css' rel='stylesheet' href='/style/reset.css' />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- <link type='text/css' rel='stylesheet' href='/style/reset.css' /> -->
     <link type='text/css' rel='stylesheet' href='/style/game.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Frameworks -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src='/js/vendor/phaser.js'></script>
     <script src='/socket.io/socket.io.js'></script>
   </head>
   <body>
-    <script src='/js/RemotePlayer.js'></script>
-    <script src='/js/game.js'></script>
+    <!-- Header -->
+    <div class="jumbotron text-center">
+      <h1>Aggies vs Zombies</h1>
+      <p>We created this game for a class at A&M!</p>
+    </div>
+
+    <!-- Container(Game) -->
+    <div class="container-fluid text-center" id="GamePhaser">
+        <script src='/js/RemotePlayer.js'></script>
+        <script src='/js/game.js'></script>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container-fluid text-center">
+        <h3>Team:</h3>
+        <div class="row">
+            <div class="col-xs-6 col-sm-3">
+                <p>Gerardo Vazquez - <a href="https://gvzq.github.io/">gvzq.github.io</a></p>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <p>Antonia Jones <a href="#"></a></p>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <p>Nick Gilpin <a href="#"></a></p>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <p>Cristina Corales <a href="#"></a></p>
+            </div>
+        </div>
+    </footer>
+
   </body>
 </html>

@@ -1,9 +1,15 @@
-body {
+/*body {
   margin: 0;
   overflow: hidden;
-}
+  text-align: center;
+}*/
 
 canvas {
   display: block;
   background: #000000;
+  text-align: center;
+  padding: 0;
+  margin: auto;
+  display: block;
+  width: 800px;
 }

@@ -398,7 +398,7 @@ GameStates.GameOver.prototype = {
         console.log("Total kills: "+ zombiesKilled);
 
         game.add.button(25, 500, 'startButton', this.fromGameOvertoStart, this, 2, 1, 0);
-        
+
         // Remove Zombies
         zombies.removeAll();
 		// Display difficulty
@@ -539,7 +539,7 @@ GameStates.Settings.prototype = {
 };
 
 // Adds game states to the phaser game
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'Game');
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'GamePhaser');
 game.state.add('Start', GameStates.Start);
 game.state.add('Game', GameStates.Game);
 game.state.add('Instructions', GameStates.Instructions);
