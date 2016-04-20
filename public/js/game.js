@@ -632,7 +632,6 @@ function onNewZombie (data) {
 	  // Sets the size of the zombie for physics purposes
 	  zombie.body.setSize(20, 20, 0, 0);
 
-	  //zombies.children[ zombies.length-1 ].id = data.x
 	  zombie.id = data.i;
 	  zombie.animations.add('walk', [4, 5] , 10, true);
 	  zombie.animations.play('walk');
@@ -645,8 +644,8 @@ function onNewZombie (data) {
 function onMoveZombie (data) {
 
   for ( i = 0; i < zombies.length; i++) {
-	//zombies.children[i].id === data.id ) {
-	if ( (i%2) === 0 ) {
+		
+	if ( (zombies.children[i].id%2) === 0 ) {
 		game.physics.arcade.moveToXY( zombies.children[i], data.x1, data.y1, 80);
 		zombies.children[i].rotation = game.physics.arcade.angleToXY(zombies.children[i], data.x1, data.y1);
 	}
