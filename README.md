@@ -29,4 +29,4 @@ Demo of current game:
 <img src='https://github.tamu.edu/LosChimichangos/D6/blob/master/Animation2.gif?raw=true' title='Walkthrough after Revision' width='' alt='Video Walkthrough' />
 
 This is the first demo: 
-<img src='https://github.tamu.edu/raw/LosChimichangos/D6/master/Animation.gif?token=AAAGmEmakHbT86Ve1ZcTvw4mVdGHYo1vks5XHYpMwA%3D%3D' title='Walkthrough before Revision' width='' alt='Video Walkthrough' />
+<img src='https://github.tamu.edu/LosChimichangos/D6/blob/master/Animation.gif?raw=true' title='Walkthrough before Revision' width='' alt='Video Walkthrough' />
